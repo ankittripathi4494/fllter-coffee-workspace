@@ -12,6 +12,7 @@ import 'package:filtercoffee/modules/splash/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'modules/customers/bloc/customer_bloc.dart';
 import 'modules/signup/register_bloc/register_bloc.dart';
 
 class RouterClassSection {
@@ -93,45 +94,62 @@ class RouterClassSection {
             arguments: const {},
           ),
         );
-      
 
-       case '/customer-list':
+      case '/customer-list':
         if (args is Map<String, dynamic>) {
           return MaterialPageRoute(
-            builder: (context) => CustomerListScreen(
-              arguments: args,
+            builder: (context) => BlocProvider(
+              create: (context) => CustomerBloc(),
+              child: CustomerListScreen(
+                arguments: args,
+              ),
             ),
           );
         }
         return MaterialPageRoute(
-          builder: (context) => CustomerListScreen(
-            arguments: const {},
+          builder: (context) => BlocProvider(
+            create: (context) => CustomerBloc(),
+            child: CustomerListScreen(
+              arguments: const {},
+            ),
           ),
         );
       case '/add-customer':
         if (args is Map<String, dynamic>) {
           return MaterialPageRoute(
-            builder: (context) => AddCustomerScreen(
-              arguments: args,
+            builder: (context) => BlocProvider(
+              create: (context) => CustomerBloc(),
+              child: AddCustomerScreen(
+                arguments: args,
+              ),
             ),
           );
         }
         return MaterialPageRoute(
-          builder: (context) => AddCustomerScreen(
-            arguments: const {},
+          builder: (context) => BlocProvider(
+            create: (context) => CustomerBloc(),
+            child: AddCustomerScreen(
+              arguments: const {},
+            ),
           ),
         );
       case '/edit-customer':
         if (args is Map<String, dynamic>) {
           return MaterialPageRoute(
-            builder: (context) => EditCustomerScreen(
-              arguments: args,
+            builder: (context) => BlocProvider(
+              create: (context) => CustomerBloc(),
+              child: EditCustomerScreen(
+                arguments: args,
+              ),
             ),
           );
         }
         return MaterialPageRoute(
-          builder: (context) => EditCustomerScreen(
-            arguments: const {},
+          builder: (context) => BlocProvider(
+            create: (context) => CustomerBloc(),
+            child: EditCustomerScreen(
+              arguments: const {},
+            ),
           ),
         );
       default:

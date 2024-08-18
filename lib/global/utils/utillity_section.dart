@@ -49,3 +49,17 @@ Map<int, String> monthsInYear = {
   11: "November",
   12: "December"
 };
+
+
+  List<Map<String, dynamic>> genderList = [
+    {"name": "Male", "input": 1},
+    {"name": "Female", "input": 2},
+    {"name": "Transgender", "input": 3},
+    {"name": "Other", "input": 4},
+  ];
+  List<Map<String, dynamic>> marriageStatusList = [
+    {"name": "Married", "input": 1},
+    {"name": "Unmarried", "input": 2},
+    {"name": "Divorcee", "input": 3},
+     {"name": "Widowed", "input": 4},
+  ];

@@ -59,7 +59,7 @@ class DatabaseHelper {
         area TEXT,
         dob TEXT,
         gender TEXT,
-        occupation TEXT,
+        occupation INTEGER,
         married INTEGER
       )
     ''');

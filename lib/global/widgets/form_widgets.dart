@@ -15,8 +15,10 @@ class FormWidgets {
       String? helperText,
       TextInputType? keyboardType,
       int? maxLength,
+      bool? enabled,
       TextEditingController? controller}) {
     return TextFormField(
+      enabled: enabled,
       onChanged: (value) => onChanged,
       controller: controller,
       keyboardType: keyboardType,
@@ -24,8 +26,9 @@ class FormWidgets {
       obscuringCharacter: obscuringCharacter,
       inputFormatters: inputFormatters,
       maxLength: maxLength,
+      style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
-        counterText: "",
+          counterText: "",
           prefixIcon: prefixIcon,
           prefixIconColor: Colors.green,
           suffixIcon: (suffixIcon != null) ? suffixIcon : null,
@@ -54,5 +57,4 @@ class FormWidgets {
               borderSide: BorderSide(color: Colors.black, width: 2))),
     );
   }
- 
 }

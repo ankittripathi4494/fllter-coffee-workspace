@@ -1,5 +1,6 @@
 import 'package:filtercoffee/global/blocs/internet/internet_cubit.dart';
 import 'package:filtercoffee/global/utils/shared_preferences_helper.dart';
+import 'package:filtercoffee/modules/customers/bloc/customer_bloc.dart';
 import 'package:filtercoffee/modules/dashboard/bloc/dashboard_bloc.dart';
 import 'package:filtercoffee/modules/signin/login_bloc/login_bloc.dart';
 import 'package:filtercoffee/modules/signup/register_bloc/register_bloc.dart';
@@ -33,6 +34,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<DashboardBloc>(
           create: (context) => DashboardBloc(),
+        ),
+         BlocProvider<CustomerBloc>(
+          create: (context) => CustomerBloc(),
         ),
       ],
       child: const MaterialApp(
