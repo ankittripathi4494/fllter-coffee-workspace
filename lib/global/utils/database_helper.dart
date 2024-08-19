@@ -58,8 +58,8 @@ class DatabaseHelper {
         district TEXT,
         area TEXT,
         dob TEXT,
-        gender TEXT,
-        occupation INTEGER,
+        gender INTEGER,
+        occupation TEXT,
         married INTEGER
       )
     ''');

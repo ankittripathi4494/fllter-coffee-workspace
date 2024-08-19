@@ -9,6 +9,7 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
   CustomerBloc() : super(CustomerInitial()) {
     on<AddCustomerEvent>(_addCustomerMethod);
     on<FetchCustomerListEvent>(_fetchCustomerList);
+    on<EditCustomerEvent>(_editCustomerMethod);
   }
 
   Future<FutureOr<void>> _fetchCustomerList(
@@ -55,6 +56,41 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
       }
     } catch (e) {
       emit(AddCustomerFailedState(errorMessage: e.toString()));
+    }
+  }
+
+  Future<FutureOr<void>> _editCustomerMethod(
+      EditCustomerEvent event, Emitter<CustomerState> emit) async {
+    emit(EditCustomerLoadingState());
+    try {
+      int outputResult = await db.update(
+          "CustomersCredData",
+          {
+            'name': event.name,
+            'age': event.age,
+            'contact': event.contact,
+            'city': event.city,
+            'address': event.address,
+            'pincode': event.pincode,
+            'district': event.district,
+            'area': event.area,
+            'dob': event.dob,
+            'gender': event.gender,
+            'occupation': event.occupation,
+            'married': event.marriage,
+          },
+          'id = ?',
+          [event.id]);
+      if (outputResult > 0) {
+        //insert success
+        emit(EditCustomerSuccessState(
+            successMessage: "Customer Edit Successfully"));
+      } else {
+        //insert failed
+        emit(EditCustomerFailedState(errorMessage: "Customer Edit Failed"));
+      }
+    } catch (e) {
+      emit(EditCustomerFailedState(errorMessage: e.toString()));
     }
   }
 }

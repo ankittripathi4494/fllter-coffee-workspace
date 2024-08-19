@@ -29,38 +29,97 @@ class CustomerListScreen extends StatelessWidget {
           Navigator.pushReplacementNamed(context, '/network-error-screen');
         }
       },
-      child: Scaffold(
-        appBar: CustomAppBarWidget.customAppBar(arguments: arguments),
-        body: BlocProvider(
-          create: (context) => customerBloc,
-          child: BlocBuilder<CustomerBloc, CustomerState>(
-            builder: (context, state) {
-              if (state is FetchCustomerListLoadedState) {
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: state.customerList.length,
-                  itemBuilder: (context, index) {
-                    Map<String, dynamic> data = state.customerList[index];
-                    return ListTile(
-                      title: Text(data["name"]),
-                      subtitle: Text(data["occupation"]),
-                    );
-                  },
+      child: Container(
+        decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                colors: [Colors.blue, Colors.deepPurple],
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight)),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: CustomAppBarWidget.customAppBar(arguments: arguments),
+          body: BlocProvider(
+            create: (context) => customerBloc,
+            child: BlocBuilder<CustomerBloc, CustomerState>(
+              builder: (context, state) {
+                if (state is FetchCustomerListLoadedState) {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: state.customerList.length,
+                    itemBuilder: (context, index) {
+                      Map<String, dynamic> selectedCustomer =
+                          state.customerList[index];
+
+                      return Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          decoration: const BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20)),
+                              gradient: LinearGradient(
+                                  colors: [Colors.white, Colors.grey],
+                                  begin: Alignment.bottomLeft,
+                                  end: Alignment.topRight)),
+                          child: ListTile(
+                            visualDensity: const VisualDensity(vertical: -4),
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  selectedCustomer["name"],
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                                IconButton(
+                                    onPressed: () {
+                                       Navigator.pushNamed(
+                                          context, '/edit-customer',
+                                          arguments: {
+                                            'title': "Edit Customer",
+                                            'selectedCustomer':
+                                                selectedCustomer,
+                                          });
+                                    },
+                                    icon: const Icon(
+                                      Icons.edit,
+                                      color: Colors.black,
+                                    ))
+                              ],
+                            ),
+                            subtitle: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  selectedCustomer["occupation"],
+                                  style: const TextStyle(color: Colors.black),
+                                ),
+                                IconButton(
+                                    onPressed: () {
+                                     
+                                    },
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.black,
+                                    ))
+                              ],
+                            ),
+                          ));
+                    },
+                  );
+                }
+                if (state is FetchCustomerListFailedState) {
+                  return Center(
+                    child: Image.asset(
+                      ImageList.noInternetImage,
+                      width: 200,
+                      height: 200,
+                    ),
+                  );
+                }
+                return const Center(
+                  child: CircularProgressIndicator(),
                 );
-              }
-              if (state is FetchCustomerListFailedState) {
-                return Center(
-                  child: Image.asset(
-                    ImageList.noInternetImage,
-                    width: 200,
-                    height: 200,
-                  ),
-                );
-              }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            },
+              },
+            ),
           ),
         ),
       ),
