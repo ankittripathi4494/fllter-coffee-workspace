@@ -351,7 +351,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                           keyboardType: TextInputType.text,
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(
-                                RegExp(r'[A-Za-z]'))
+                                RegExp(r'[A-Za-z\s]'))
                           ],
                           onChanged: () {},
                           labelText: "Customer Occupation",

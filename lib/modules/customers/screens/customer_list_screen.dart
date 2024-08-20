@@ -1,10 +1,15 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:filtercoffee/global/utils/database_helper.dart';
+import 'package:filtercoffee/global/utils/logger_util.dart';
 import 'package:filtercoffee/global/widgets/custom_app_bar.dart';
+import 'package:filtercoffee/global/widgets/dialog.dart';
+import 'package:filtercoffee/global/widgets/model_bottom_sheet.dart';
 import 'package:filtercoffee/img_list.dart';
 import 'package:filtercoffee/modules/customers/bloc/customer_bloc.dart';
 import 'package:filtercoffee/modules/customers/bloc/customer_event.dart';
 import 'package:filtercoffee/modules/customers/bloc/customer_state.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,6 +25,7 @@ class CustomerListScreen extends StatelessWidget {
 
   late CustomerBloc customerBloc = CustomerBloc()
     ..add(FetchCustomerListEvent());
+  final DatabaseHelper db = DatabaseHelper();
   @override
   Widget build(BuildContext context) {
     return BlocListener<InternetCubit, InternetState>(
@@ -61,6 +67,11 @@ class CustomerListScreen extends StatelessWidget {
                                   begin: Alignment.bottomLeft,
                                   end: Alignment.topRight)),
                           child: ListTile(
+                            onTap: () {
+                              CustomModelBottomSheet
+                                  .showCustomModelBottomSheetForDetails(context,
+                                      customerDetails: selectedCustomer);
+                            },
                             visualDensity: const VisualDensity(vertical: -4),
                             title: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -71,7 +82,7 @@ class CustomerListScreen extends StatelessWidget {
                                 ),
                                 IconButton(
                                     onPressed: () {
-                                       Navigator.pushNamed(
+                                      Navigator.pushNamed(
                                           context, '/edit-customer',
                                           arguments: {
                                             'title': "Edit Customer",
@@ -94,7 +105,66 @@ class CustomerListScreen extends StatelessWidget {
                                 ),
                                 IconButton(
                                     onPressed: () {
-                                     
+                                      CustomDialog.showDialogDeleteRequest(
+                                          context,
+                                          barrierDismissible: false,
+                                          title: TextButton.icon(
+                                            style: TextButton.styleFrom(
+                                                foregroundColor: Colors.black,
+                                                textStyle: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.w500)),
+                                            onPressed: null,
+                                            label: const Text(
+                                                "Do you want to delete the customer?"),
+                                            icon: const Icon(
+                                              CupertinoIcons.delete,
+                                              size: 50,
+                                              color: Colors.red,
+                                            ),
+                                          ),
+                                          actionsAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          actions: [
+                                            TextButton.icon(
+                                              style: TextButton.styleFrom(
+                                                  foregroundColor: Colors.white,
+                                                  backgroundColor: Colors.red,
+                                                  textStyle: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w500)),
+                                              onPressed: () async {
+                                                _deleteCustomer(
+                                                    context, selectedCustomer);
+                                              },
+                                              label: const Text("Yes"),
+                                              icon: const Icon(
+                                                CupertinoIcons
+                                                    .check_mark_circled,
+                                              ),
+                                            ),
+                                            TextButton.icon(
+                                              style: TextButton.styleFrom(
+                                                  foregroundColor: Colors.white,
+                                                  backgroundColor: Colors.green,
+                                                  textStyle: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w500)),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              label: const Text("No"),
+                                              icon: const Icon(
+                                                Icons.cancel_rounded,
+                                              ),
+                                            ),
+                                          ]);
                                     },
                                     icon: const Icon(
                                       Icons.delete,
@@ -124,5 +194,27 @@ class CustomerListScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _deleteCustomer(BuildContext context, Map<String, dynamic> selectedCustomer) {
+    Navigator.pop(context);
+    CustomDialog.showDialogDeleteRequest(context,
+        barrierDismissible: false,
+        title: const Center(
+          child: CircularProgressIndicator(),
+        ));
+    Future.delayed(Durations.extralong4, () {
+      LoggerUtil().errorData("Deletion Processing");
+      db.delete(
+          table: "CustomersCredData",
+          whereClause: "id=?",
+          whereArgs: [selectedCustomer['id']]).then((c) {
+        LoggerUtil().errorData("Deletion Process complete");
+
+        Navigator.pop(context);
+        Navigator.pushReplacementNamed(context, '/customer-list',
+            arguments: arguments);
+      });
+    });
   }
 }

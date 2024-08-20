@@ -19,7 +19,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     //! Map Event 2 with States according to logic
     on<RegisterFormSubmitEvent>(_onFormSubmitEvent);
 
-     //! Map Event 3 with States according to logic
+    //! Map Event 3 with States according to logic
     on<TogglePasswordRegisterEvent>(_togglePasswordEvent);
   }
 
@@ -44,9 +44,9 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       RegisterFormSubmitEvent event, Emitter<RegisterState> emit) async {
     try {
       final users = await db.queryRowByClause(
-        "UserCredData",
-        "username=? and password=?",
-        [event.usernameData, event.passwordData],
+        table: "UserCredData",
+        whereClause: "username=? and password=?",
+        whereArgs: [event.usernameData, event.passwordData],
       );
 
       if (users!.isNotEmpty) {
@@ -55,7 +55,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
             errorMessage: "Data already exists, please login."));
       } else {
         try {
-          db.insert("UserCredData", {
+          db.insert(table: "UserCredData", values: {
             'username': event.usernameData,
             'password': event.passwordData,
           });
@@ -75,11 +75,10 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     }
   }
 
- void _togglePasswordEvent(
+  void _togglePasswordEvent(
       TogglePasswordRegisterEvent event, Emitter<RegisterState> emit) {
     late bool passwordStatus;
     passwordStatus = !event.passwordStatus;
     emit(ToggleChangeRegisterStatus(successMessage: passwordStatus));
   }
 }
-

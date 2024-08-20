@@ -40,9 +40,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       LoginFormSubmitEvent event, Emitter<LoginState> emit) async {
     try {
       final List<Map<String, dynamic>>? result = await db.queryRowByClause(
-        "UserCredData",
-        "username=? and password=?",
-        [event.usernameData, event.passwordData],
+        table: "UserCredData",
+        whereClause: "username=? and password=?",
+        whereArgs: [event.usernameData, event.passwordData],
       );
 
       if (result != null && result.isNotEmpty) {

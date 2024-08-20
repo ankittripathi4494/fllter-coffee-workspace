@@ -66,21 +66,21 @@ class DatabaseHelper {
   }
 
   // CRUD methods
-  Future<int> insert(String table, Map<String, dynamic> values) async {
+  Future<int> insert({String? table, Map<String, dynamic>? values}) async {
     Database db = await database;
-    return await db.insert(table, values);
+    return await db.insert(table!, values!);
   }
 
-  Future<List<Map<String, dynamic>>> queryAllRows(String table) async {
+  Future<List<Map<String, dynamic>>> queryAllRows({String? table}) async {
     Database db = await database;
-    return await db.query(table);
+    return await db.query(table!);
   }
 
   // Query a specific row by id
-  Future<Map<String, dynamic>?> queryRowById(String table, int id) async {
+  Future<Map<String, dynamic>?> queryRowById({String? table, int? id}) async {
     Database db = await database;
     List<Map<String, dynamic>> results =
-        await db.query(table, where: 'id = ?', whereArgs: [id]);
+        await db.query(table!, where: 'id = ?', whereArgs: [id]);
     if (results.isNotEmpty) {
       return results.first;
     } else {
@@ -90,23 +90,23 @@ class DatabaseHelper {
 
   // Query a specific row by multiple clause
   Future<List<Map<String, dynamic>>?> queryRowByClause(
-      String table, String whereClause, List<dynamic> whereArgs) async {
+      {String? table, String? whereClause, List<dynamic>? whereArgs}) async {
     Database db = await database;
     List<Map<String, dynamic>> results =
-        await db.query(table, where: whereClause, whereArgs: whereArgs);
+        await db.query(table!, where: whereClause, whereArgs: whereArgs);
     return results;
   }
 
-  Future<int> update(String table, Map<String, dynamic> values,
-      String whereClause, List<dynamic> whereArgs) async {
+  Future<int> update({String? table, Map<String, dynamic>? values,
+      String? whereClause, List<dynamic>? whereArgs}) async {
     Database db = await database;
-    return await db.update(table, values,
+    return await db.update(table!, values!,
         where: whereClause, whereArgs: whereArgs);
   }
 
   Future<int> delete(
-      String table, String whereClause, List<dynamic> whereArgs) async {
+      {String? table, String? whereClause, List<dynamic>? whereArgs}) async {
     Database db = await database;
-    return await db.delete(table, where: whereClause, whereArgs: whereArgs);
+    return await db.delete(table!, where: whereClause, whereArgs: whereArgs);
   }
 }

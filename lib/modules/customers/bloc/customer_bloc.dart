@@ -17,7 +17,7 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
     emit(FetchCustomerListLoadingState());
     try {
       List<Map<String, dynamic>> customerList =
-          await db.queryAllRows("CustomersCredData");
+          await db.queryAllRows(table: "CustomersCredData");
       if (customerList.isNotEmpty) {
         emit(FetchCustomerListLoadedState(customerList: customerList));
       } else {
@@ -32,7 +32,7 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
       AddCustomerEvent event, Emitter<CustomerState> emit) async {
     emit(AddCustomerLoadingState());
     try {
-      int outputResult = await db.insert("CustomersCredData", {
+      int outputResult = await db.insert(table: "CustomersCredData", values: {
         'name': event.name,
         'age': event.age,
         'contact': event.contact,
@@ -64,8 +64,8 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
     emit(EditCustomerLoadingState());
     try {
       int outputResult = await db.update(
-          "CustomersCredData",
-          {
+          table: "CustomersCredData",
+          values: {
             'name': event.name,
             'age': event.age,
             'contact': event.contact,
@@ -79,14 +79,14 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
             'occupation': event.occupation,
             'married': event.marriage,
           },
-          'id = ?',
-          [event.id]);
+          whereClause: 'id = ?',
+          whereArgs: [event.id]);
       if (outputResult > 0) {
-        //insert success
+        //update success
         emit(EditCustomerSuccessState(
             successMessage: "Customer Edit Successfully"));
       } else {
-        //insert failed
+        //update failed
         emit(EditCustomerFailedState(errorMessage: "Customer Edit Failed"));
       }
     } catch (e) {
