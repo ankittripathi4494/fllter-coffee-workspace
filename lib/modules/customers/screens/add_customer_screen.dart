@@ -1,10 +1,13 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:io';
+
 import 'package:filtercoffee/global/utils/logger_util.dart';
 import 'package:filtercoffee/global/utils/utillity_section.dart';
 import 'package:filtercoffee/global/widgets/auto_click_button_widget.dart';
 import 'package:filtercoffee/global/widgets/custom_app_bar.dart';
 import 'package:filtercoffee/global/widgets/form_widgets.dart';
+import 'package:filtercoffee/global/widgets/image_picker_widget.dart';
 import 'package:filtercoffee/global/widgets/toast_notification.dart';
 import 'package:filtercoffee/modules/customers/bloc/customer_bloc.dart';
 import 'package:filtercoffee/modules/customers/bloc/customer_event.dart';
@@ -13,6 +16,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' as i;
 import '../../../global/blocs/internet/internet_cubit.dart';
 import '../../../global/blocs/internet/internet_state.dart';
@@ -41,6 +45,8 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
   TextEditingController customerOccupationController = TextEditingController();
   int? gender;
   int? married;
+  final ImagePicker _imagePicker = ImagePicker();
+  XFile? selectedImage;
 
   @override
   void initState() {
@@ -94,6 +100,64 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                             },
                             context: context)
                         : Container(),
+                    InkWell(
+                      onTap: () {
+                        ImagePickerWidget.imagePicker(
+                          context,
+                          galleryFunc: () async {
+                            _imagePicker
+                                .pickImage(
+                                    source: ImageSource.gallery,
+                                    maxHeight: 450,
+                                    maxWidth: 450)
+                                .then((c) {
+                              setState(() {
+                                selectedImage = c;
+                              });
+                            });
+                            Navigator.pop(context);
+                          },
+                          cameraFunc: () async {
+                            _imagePicker
+                                .pickImage(
+                                    source: ImageSource.camera,
+                                    maxHeight: 450,
+                                    maxWidth: 450)
+                                .then((c) {
+                              setState(() {
+                                selectedImage = c;
+                              });
+                            });
+                             Navigator.pop(context);
+                          },
+                        );
+                      },
+                      child: ((selectedImage == null)
+                          ? Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: context.screenWidth * 0.05,
+                                  vertical: context.screenHeight * 0.01),
+                              child: const CircleAvatar(
+                                radius: 50,
+                                backgroundColor: Colors.white,
+                                child: Icon(
+                                  Icons.person,
+                                  size: 50,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            )
+                          : Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: context.screenWidth * 0.05,
+                                  vertical: context.screenHeight * 0.01),
+                              child: CircleAvatar(
+                                radius: 100,
+                                backgroundImage:
+                                    FileImage(File(selectedImage!.path)),
+                              ),
+                            )),
+                    ),
                     Container(
                       padding: EdgeInsets.symmetric(
                           horizontal: context.screenWidth * 0.05,
@@ -380,7 +444,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                                   dob: customerDOBController.text,
                                   occupation: customerOccupationController.text,
                                   gender: gender!,
-                                  marriage: married!));
+                                  marriage: married!, image: selectedImage));
                         },
                         child: Container(
                           height: context.screenSize.height * 0.05,

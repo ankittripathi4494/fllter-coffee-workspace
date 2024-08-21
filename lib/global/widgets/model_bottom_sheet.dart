@@ -9,7 +9,7 @@ class CustomModelBottomSheet {
       elevation: 20,
       scrollControlDisabledMaxHeightRatio:0.9,
       builder: (context) {
-        return Container(
+        return SizedBox(
           width: context.screenWidth,
           child: Column(
             children: [

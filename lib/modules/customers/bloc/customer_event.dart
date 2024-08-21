@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:image_picker/image_picker.dart';
+
 class CustomerEvent {}
 
 class AddCustomerEvent extends CustomerEvent {
@@ -14,6 +16,7 @@ class AddCustomerEvent extends CustomerEvent {
   late String occupation;
   late int gender;
   late int marriage;
+  late XFile? image;
   AddCustomerEvent({
     required this.name,
     required this.age,
@@ -27,6 +30,7 @@ class AddCustomerEvent extends CustomerEvent {
     required this.occupation,
     required this.gender,
     required this.marriage,
+    required this.image
   });
 }
 
@@ -44,6 +48,7 @@ class EditCustomerEvent extends CustomerEvent {
   late String occupation;
   late int gender;
   late int marriage;
+   late XFile? image;
   EditCustomerEvent({
     required this.id,
     required this.name,
@@ -58,6 +63,7 @@ class EditCustomerEvent extends CustomerEvent {
     required this.occupation,
     required this.gender,
     required this.marriage,
+    required this.image
   });
 }
 

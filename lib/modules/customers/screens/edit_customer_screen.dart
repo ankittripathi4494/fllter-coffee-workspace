@@ -67,7 +67,7 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
       customerDOBController.text = selectedCustomer['dob'].toString().trim();
       customerOccupationController.text =
           selectedCustomer['occupation'].toString().trim();
-  customerAreaController.text =  selectedCustomer['area'].toString().trim();
+      customerAreaController.text = selectedCustomer['area'].toString().trim();
       int marriedindex = marriageStatusList.indexWhere((d) => (int.parse(
               d['input'].toString().trim().toLowerCase()) ==
           int.parse(
@@ -421,7 +421,8 @@ class _EditCustomerScreenState extends State<EditCustomerScreen> {
                                   dob: customerDOBController.text,
                                   occupation: customerOccupationController.text,
                                   gender: gender!,
-                                  marriage: married!));
+                                  marriage: married!,
+                                  image: null));
                         },
                         child: Container(
                           height: context.screenSize.height * 0.05,

@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:filtercoffee/global/blocs/internet/internet_cubit.dart';
 import 'package:filtercoffee/global/utils/shared_preferences_helper.dart';
 import 'package:filtercoffee/modules/customers/bloc/customer_bloc.dart';
@@ -8,10 +9,12 @@ import 'package:filtercoffee/router_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+late List<CameraDescription> cameras;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Initialize the SharedPreferencesHelper
   await SessionHelper().init();
+  cameras = await availableCameras();
   runApp(const MyApp());
 }
 
@@ -29,13 +32,13 @@ class MyApp extends StatelessWidget {
         BlocProvider<LoginBloc>(
           create: (context) => LoginBloc(),
         ),
-         BlocProvider<RegisterBloc>(
+        BlocProvider<RegisterBloc>(
           create: (context) => RegisterBloc(),
         ),
         BlocProvider<DashboardBloc>(
           create: (context) => DashboardBloc(),
         ),
-         BlocProvider<CustomerBloc>(
+        BlocProvider<CustomerBloc>(
           create: (context) => CustomerBloc(),
         ),
       ],
