@@ -8,18 +8,18 @@ import 'package:filtercoffee/main.dart';
 import 'package:filtercoffee/modules/dashboard/bloc/dashboard_state.dart';
 import 'package:flutter/material.dart';
 
-class ListViewWidget extends StatefulWidget {
+class CameraWidget extends StatefulWidget {
   late CountryLoadingSuccessState? state;
-  ListViewWidget({
+  CameraWidget({
     this.state,
     super.key,
   });
 
   @override
-  State<ListViewWidget> createState() => _ListViewWidgetState();
+  State<CameraWidget> createState() => _CameraWidgetState();
 }
 
-class _ListViewWidgetState extends State<ListViewWidget> {
+class _CameraWidgetState extends State<CameraWidget> {
   late CameraController controller;
   XFile? captureImage;
 

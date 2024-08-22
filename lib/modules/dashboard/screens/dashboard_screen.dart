@@ -4,7 +4,8 @@ import 'package:filtercoffee/global/blocs/internet/internet_cubit.dart';
 import 'package:filtercoffee/global/blocs/internet/internet_state.dart';
 import 'package:filtercoffee/global/widgets/my_drawer.dart';
 import 'package:filtercoffee/modules/dashboard/widgets/grid_view_widget.dart';
-import 'package:filtercoffee/modules/dashboard/widgets/list_view_widget.dart';
+import 'package:filtercoffee/modules/dashboard/widgets/camera_widget.dart';
+import 'package:filtercoffee/modules/dashboard/widgets/location_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,7 +36,7 @@ class _DashboardScreenState extends State<DashboardScreen>
   late TabController _tabController;
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     fetchCountry();
     super.initState();
   }
@@ -60,7 +61,6 @@ class _DashboardScreenState extends State<DashboardScreen>
           Navigator.pushReplacementNamed(context, '/network-error-screen');
         }
       },
-      
       child: Scaffold(
         appBar: AppBar(
           systemOverlayStyle: SystemUiOverlayStyle.light,
@@ -73,7 +73,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                     end: Alignment.topRight)),
           ),
           iconTheme: const IconThemeData(color: Colors.white),
-           title: Text(widget.arguments.containsKey("title")
+          title: Text(widget.arguments.containsKey("title")
               ? widget.arguments['title']
               : ''),
           centerTitle: true,
@@ -84,7 +84,11 @@ class _DashboardScreenState extends State<DashboardScreen>
               controller: _tabController,
               tabs: const [
                 Icon(
-                  Icons.list,
+                  Icons.camera,
+                  size: 50,
+                ),
+                Icon(
+                  Icons.location_history,
                   size: 50,
                 ),
                 Icon(
@@ -103,7 +107,10 @@ class _DashboardScreenState extends State<DashboardScreen>
                   children: [
                     Flexible(
                       child: TabBarView(controller: _tabController, children: [
-                        ListViewWidget(
+                        CameraWidget(
+                          state: state,
+                        ),
+                        LocationWidget(
                           state: state,
                         ),
                         GridViewWidget(
@@ -134,4 +141,3 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
   }
 }
-
