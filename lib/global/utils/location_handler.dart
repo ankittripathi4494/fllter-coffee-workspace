@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, unused_local_variable
 
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';

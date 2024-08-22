@@ -1,7 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:filtercoffee/global/blocs/internet/internet_cubit.dart';
 import 'package:filtercoffee/global/utils/location_handler.dart';
-import 'package:filtercoffee/global/utils/logger_util.dart';
 import 'package:filtercoffee/global/utils/shared_preferences_helper.dart';
 import 'package:filtercoffee/modules/customers/bloc/customer_bloc.dart';
 import 'package:filtercoffee/modules/dashboard/bloc/dashboard_bloc.dart';
@@ -10,7 +9,6 @@ import 'package:filtercoffee/modules/signup/register_bloc/register_bloc.dart';
 import 'package:filtercoffee/router_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 late List<CameraDescription> cameras;
 Future<void> main() async {
