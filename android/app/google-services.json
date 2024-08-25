@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "745217816472",
+    "project_id": "filter-coffeee-4493",
+    "storage_bucket": "filter-coffeee-4493.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:745217816472:android:93b9be9f3f43f67b3f1ded",
+        "android_client_info": {
+          "package_name": "com.javapro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbVzteTecZf_VP7IRsL3eWVLl--twx-NM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

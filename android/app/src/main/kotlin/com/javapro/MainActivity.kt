@@ -1,4 +1,4 @@
-package com.javapro.filtercoffee
+package com.javapro
 
 import io.flutter.embedding.android.FlutterActivity
 
