@@ -1,4 +1,17 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable, avoid_print
+import 'dart:async';
+import 'dart:math';
+
 import 'package:camera/camera.dart';
+import 'package:filtercoffee/global/blocs/theme_switcher/theme_switcher_bloc.dart';
+import 'package:filtercoffee/global/blocs/theme_switcher/theme_switcher_state.dart';
+import 'package:filtercoffee/global/utils/theme.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 import 'package:filtercoffee/firebase_options.dart';
 import 'package:filtercoffee/global/blocs/internet/internet_cubit.dart';
 import 'package:filtercoffee/global/utils/location_handler.dart';
@@ -10,12 +23,46 @@ import 'package:filtercoffee/modules/dashboard/bloc/dashboard_bloc.dart';
 import 'package:filtercoffee/modules/signin/login_bloc/login_bloc.dart';
 import 'package:filtercoffee/modules/signup/register_bloc/register_bloc.dart';
 import 'package:filtercoffee/router_file.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 
+GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 late List<CameraDescription> cameras;
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+AndroidNotificationChannel channel = const AndroidNotificationChannel(
+    'filter_coffee_channel', // id
+    'High Importance Notifications', // title
+    ledColor: Color.fromARGB(255, 48, 20, 97),
+    importance: Importance.high,
+    playSound: true,
+    enableLights: true);
+bool isFlutterLocalNotificationsInitialized = false;
+Future<void> setupFlutterNotifications() async {
+  if (isFlutterLocalNotificationsInitialized) {
+    return;
+  }
+
+  /// Create an Android Notification Channel.
+  ///
+  /// We use this channel in the `AndroidManifest.xml` file to override the
+  /// default FCM channel to enable heads up notifications.
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
+  /// Update the iOS foreground notification presentation options to allow
+  /// heads up notifications.
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+  isFlutterLocalNotificationsInitialized = true;
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Initialize the SharedPreferencesHelper
@@ -27,17 +74,79 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await FirebaseApiHelper().initPart();
+
+// initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@drawable/app_icon');
+
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+      onDidReceiveNotificationResponse: callOnFrontNotification,
+      onDidReceiveBackgroundNotificationResponse: callOnFrontNotification);
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     LoggerUtil().errorData('Got a message whilst in the foreground!');
     LoggerUtil().errorData('Message data: ${message.data}');
 
     if (message.notification != null) {
-      LoggerUtil().errorData('Message also contained a notification: ${message.notification}');
+      LoggerUtil().errorData(
+          'Message also contained a notification: ${message.notification}');
     }
-    LoggerUtil().errorData("title:- ${message.notification?.title??''}\nbody:-${message.notification?.body??''}");
+
+    LoggerUtil().errorData(
+        "title:- ${message.notification?.title ?? ''}\nbody:-${message.notification?.body ?? ''}");
+    int id = Random().nextInt(1678877);
+    // RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+    flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.pendingNotificationRequests()
+        .then((value) => value.any((element) => element.id == id))
+        .then((v5) {
+      if (v5) {
+        // Cancel the existing notification
+        flutterLocalNotificationsPlugin.cancel(id);
+      }
+      flutterLocalNotificationsPlugin.show(
+          id,
+          message.notification?.title ?? '',
+          message.notification?.body ?? '',
+          NotificationDetails(
+            android: AndroidNotificationDetails(
+              channel.id,
+              channel.name,
+              icon: "@drawable/app_icon",
+              // other properties...
+              importance: Importance.max,
+              priority: Priority.high,
+              enableVibration: true,
+              enableLights: true,
+              colorized: true,
+              color: Colors.deepPurple,
+              playSound: true,
+              sound: const UriAndroidNotificationSound(
+                  "resources/tunes/notification_sound.mp3"),
+            ),
+          ),
+          payload: message.data["TYPE"]);
+    }).catchError((vx5) {
+      print("The notification Error $vx5");
+    });
   });
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  runApp(const MyApp());
+  runApp(MyApp(
+    data: 'djd',
+  ));
+}
+
+callOnFrontNotification(NotificationResponse details) async {
+  LoggerUtil().infoData("callOnFrontNotification ${details.payload}");
+  await Navigator.pushReplacementNamed(
+    _navigatorKey.currentContext!,
+    '/customer-list',
+  );
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -46,10 +155,51 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 
   LoggerUtil().errorData("Handling a background message: ${message.messageId}");
+  int id = Random().nextInt(1678877);
+  // RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+  flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.pendingNotificationRequests()
+      .then((value) => value.any((element) => element.id == id))
+      .then((v5) {
+    if (v5) {
+      // Cancel the existing notification
+      flutterLocalNotificationsPlugin.cancel(id);
+    }
+    flutterLocalNotificationsPlugin.show(
+        id,
+        message.notification?.title ?? '',
+        message.notification?.body ?? '',
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            channel.id,
+            channel.name,
+            icon: "@drawable/app_icon",
+            // other properties...
+            importance: Importance.max,
+            priority: Priority.high,
+            enableVibration: true,
+            enableLights: true,
+            colorized: true,
+            color: Colors.deepPurple,
+            playSound: true,
+            sound: const UriAndroidNotificationSound(
+                "resources/tunes/notification_sound.mp3"),
+          ),
+        ),
+        payload: message.data["TYPE"]);
+  }).catchError((vx5) {
+    print("The notification Error $vx5");
+  });
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  String? data;
+  MyApp({
+    super.key,
+    this.data,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -71,12 +221,41 @@ class MyApp extends StatelessWidget {
         BlocProvider<CustomerBloc>(
           create: (context) => CustomerBloc(),
         ),
+        BlocProvider<ThemeSwitcherBloc>(
+          create: (context) => ThemeSwitcherBloc(),
+        ),
       ],
-      child: const MaterialApp(
-        debugShowCheckedModeBanner: false,
-        initialRoute: '/',
-        onGenerateRoute: RouterClassSection.generateRoute,
+      child: BlocBuilder<ThemeSwitcherBloc, ThemeSwitcherState>(
+        builder: (context, themeState) {
+          ThemeData appTheme = themeState is ThemeDarkModeState
+              ? ThemeData(
+                  useMaterial3: true,
+                  textTheme:
+                      createTextTheme(context, "Abyssinica SIL", "Aboreto"),
+                  colorScheme: MaterialTheme.darkScheme())
+              : (themeState is ThemelightModeState
+                  ? ThemeData(
+                      useMaterial3: true,
+                      textTheme:
+                          createTextTheme(context, "Abyssinica SIL", "Aboreto"),
+                      colorScheme: MaterialTheme.lightScheme())
+                  : ThemeData(
+                      useMaterial3: true,
+                      textTheme:
+                          createTextTheme(context, "Abyssinica SIL", "Aboreto"),
+                      colorScheme: MaterialTheme.lightScheme()));
+                      
+          return MaterialApp(
+            navigatorKey: _navigatorKey,
+            debugShowCheckedModeBanner: false,
+            initialRoute: '/',
+            theme: appTheme,
+            onGenerateRoute: RouterClassSection.generateRoute,
+          );
+        },
       ),
     );
   }
+
+
 }

@@ -1,7 +1,12 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:filtercoffee/global/blocs/internet/internet_cubit.dart';
 import 'package:filtercoffee/global/blocs/internet/internet_state.dart';
+import 'package:filtercoffee/global/blocs/theme_switcher/theme_switcher_bloc.dart';
+import 'package:filtercoffee/global/blocs/theme_switcher/theme_switcher_event.dart';
+import 'package:filtercoffee/global/utils/shared_preferences_helper.dart';
+import 'package:filtercoffee/global/utils/theme.dart';
 import 'package:filtercoffee/global/widgets/my_drawer.dart';
 import 'package:filtercoffee/modules/dashboard/widgets/grid_view_widget.dart';
 import 'package:filtercoffee/modules/dashboard/widgets/camera_widget.dart';
@@ -29,6 +34,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen>
     with SingleTickerProviderStateMixin {
   final List<String> items = [];
+  bool? darkTheme;
 
   CountryListResponseData? selectedValue;
   final TextEditingController textEditingController = TextEditingController();
@@ -39,6 +45,28 @@ class _DashboardScreenState extends State<DashboardScreen>
     _tabController = TabController(length: 3, vsync: this);
     fetchCountry();
     super.initState();
+  }
+
+  getCurrentTheme() async {
+    SessionHelper sph = SessionHelper();
+
+    if (sph.getBool('darkTheme') == true) {
+      // ignore: use_build_context_synchronously
+      BlocProvider.of<ThemeSwitcherBloc>(context)
+          .add(ThemeChanged(themeType: true));
+      setState(() {
+        darkTheme = true;
+      });
+    } else {
+      // ignore: use_build_context_synchronously
+      BlocProvider.of<ThemeSwitcherBloc>(context)
+          .add(ThemeChanged(themeType: false));
+      setState(() {
+        darkTheme = false;
+      });
+    }
+
+    return darkTheme;
   }
 
   fetchCountry() {
@@ -66,9 +94,11 @@ class _DashboardScreenState extends State<DashboardScreen>
           systemOverlayStyle: SystemUiOverlayStyle.light,
           foregroundColor: Colors.white,
           flexibleSpace: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
                 gradient: LinearGradient(
-                    colors: [Colors.blue, Colors.deepPurple],
+                    colors: (darkTheme == true)
+                        ? [MaterialTheme.darkScheme().primary, MaterialTheme.darkScheme().primary]
+                        : [MaterialTheme.lightScheme().primary, MaterialTheme.lightScheme().primary],
                     begin: Alignment.bottomLeft,
                     end: Alignment.topRight)),
           ),
@@ -77,6 +107,84 @@ class _DashboardScreenState extends State<DashboardScreen>
               ? widget.arguments['title']
               : ''),
           centerTitle: true,
+          actions: [
+            AnimatedToggleSwitch<bool>.dual(
+              current: (darkTheme == true) ? true : false,
+              first: false,
+              second: true,
+              spacing: 20.0,
+              indicatorSize: const Size(30, 30),
+              borderWidth: 5.0,
+              height: 35,
+              minTouchTargetSize: 20,
+              styleBuilder: (value) {
+                return (value)
+                    ? ToggleStyle(
+                        borderColor: (darkTheme == true)
+                            ? Colors.white
+                            : Colors.transparent,
+                        indicatorColor: Colors.white,
+                        boxShadow: [
+                          const BoxShadow(
+                            color: Colors.black26,
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: Offset(0, 1.5),
+                          ),
+                        ],
+                      )
+                    : ToggleStyle(
+                        borderColor: (darkTheme == true)
+                            ? Colors.white
+                            : Colors.transparent,
+                        indicatorColor: Colors.black,
+                        boxShadow: [
+                          const BoxShadow(
+                            color: Colors.black26,
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: Offset(0, 1.5),
+                          ),
+                        ],
+                      );
+              },
+              onChanged: (b) {
+                if (b == true) {
+                  BlocProvider.of<ThemeSwitcherBloc>(context)
+                      .add(ThemeChanged(themeType: true));
+                  setState(() {
+                    darkTheme = true;
+                  });
+                } else {
+                  BlocProvider.of<ThemeSwitcherBloc>(context)
+                      .add(ThemeChanged(themeType: false));
+                  setState(() {
+                    darkTheme = false;
+                  });
+                }
+              },
+              textBuilder: (value) => value
+                  ? const Text(
+                      "Dark",
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    )
+                  : const Text(
+                      "Light",
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
+              iconBuilder: (value) => value
+                  ? const Icon(
+                      Icons.dark_mode,
+                      color: Colors.black,
+                    )
+                  : const Icon(
+                      Icons.light_mode,
+                      color: Colors.white,
+                    ),
+            ),
+          ],
           bottom: TabBar(
               indicatorColor: Colors.deepOrange,
               labelColor: Colors.deepOrange,
