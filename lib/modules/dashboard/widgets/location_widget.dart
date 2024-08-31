@@ -1,9 +1,14 @@
 // ignore_for_file: must_be_immutable
 
+import 'package:filtercoffee/global/blocs/theme_switcher/theme_switcher_bloc.dart';
+import 'package:filtercoffee/global/blocs/theme_switcher/theme_switcher_event.dart';
 import 'package:filtercoffee/global/utils/location_handler.dart';
 import 'package:filtercoffee/global/utils/logger_util.dart';
+import 'package:filtercoffee/global/utils/shared_preferences_helper.dart';
+import 'package:filtercoffee/global/utils/theme.dart';
 import 'package:filtercoffee/modules/dashboard/bloc/dashboard_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:geolocator/geolocator.dart';
@@ -25,9 +30,33 @@ class _LocationWidgetState extends State<LocationWidget>
   Position? currentPosition;
   String? address;
   late final _animatedMapController = AnimatedMapController(vsync: this);
+  bool? darkTheme;
   @override
   void initState() {
+     getCurrentTheme();
     super.initState();
+  }
+
+  getCurrentTheme() async {
+    SessionHelper sph = SessionHelper();
+
+    if (sph.getBool('darkTheme') == true) {
+      // ignore: use_build_context_synchronously
+      BlocProvider.of<ThemeSwitcherBloc>(context)
+          .add(ThemeChanged(themeType: true));
+      setState(() {
+        darkTheme = true;
+      });
+    } else {
+      // ignore: use_build_context_synchronously
+      BlocProvider.of<ThemeSwitcherBloc>(context)
+          .add(ThemeChanged(themeType: false));
+      setState(() {
+        darkTheme = false;
+      });
+    }
+
+    return darkTheme;
   }
 
   fetchLocationDetails() {
@@ -56,8 +85,10 @@ class _LocationWidgetState extends State<LocationWidget>
                   child:
                       Text("currentPosition  :-${currentPosition?.toJson()}"),
                 ))
-          : const Center(
-              child: Text("Location Not Fetched"),
+          :  Center(
+              child: Text("Location Not Fetched", style: TextStyle(
+                color: (darkTheme==true)?MaterialTheme.lightScheme().primary:MaterialTheme.darkScheme().primary
+              ),),
             ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: TextButton.icon(

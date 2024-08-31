@@ -3,6 +3,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:camera/camera.dart';
+import 'package:filtercoffee/global/Localization/app_localizations_setup.dart';
+import 'package:filtercoffee/global/blocs/locale/locale_cubit.dart';
+import 'package:filtercoffee/global/blocs/locale/locale_state.dart';
 import 'package:filtercoffee/global/blocs/theme_switcher/theme_switcher_bloc.dart';
 import 'package:filtercoffee/global/blocs/theme_switcher/theme_switcher_state.dart';
 import 'package:filtercoffee/global/utils/theme.dart';
@@ -23,7 +26,6 @@ import 'package:filtercoffee/modules/dashboard/bloc/dashboard_bloc.dart';
 import 'package:filtercoffee/modules/signin/login_bloc/login_bloc.dart';
 import 'package:filtercoffee/modules/signup/register_bloc/register_bloc.dart';
 import 'package:filtercoffee/router_file.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 late List<CameraDescription> cameras;
@@ -196,66 +198,96 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 class MyApp extends StatelessWidget {
   String? data;
+  late Locale? _locale;
   MyApp({
     super.key,
     this.data,
-  });
+  }) {
+    _loadLangData();
+  }
+  _loadLangData() async {
+    _locale = Locale(SessionHelper().getString("lang")!);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      // all blocs and cubits must be register here compulsory
-      providers: [
-        BlocProvider<InternetCubit>(
-          create: (context) => InternetCubit(),
-        ),
-        BlocProvider<LoginBloc>(
-          create: (context) => LoginBloc(),
-        ),
-        BlocProvider<RegisterBloc>(
-          create: (context) => RegisterBloc(),
-        ),
-        BlocProvider<DashboardBloc>(
-          create: (context) => DashboardBloc(),
-        ),
-        BlocProvider<CustomerBloc>(
-          create: (context) => CustomerBloc(),
-        ),
-        BlocProvider<ThemeSwitcherBloc>(
-          create: (context) => ThemeSwitcherBloc(),
-        ),
-      ],
-      child: BlocBuilder<ThemeSwitcherBloc, ThemeSwitcherState>(
-        builder: (context, themeState) {
-          ThemeData appTheme = themeState is ThemeDarkModeState
-              ? ThemeData(
-                  useMaterial3: true,
-                  textTheme:
-                      createTextTheme(context, "Abyssinica SIL", "Aboreto"),
-                  colorScheme: MaterialTheme.darkScheme())
-              : (themeState is ThemelightModeState
-                  ? ThemeData(
-                      useMaterial3: true,
-                      textTheme:
-                          createTextTheme(context, "Abyssinica SIL", "Aboreto"),
-                      colorScheme: MaterialTheme.lightScheme())
-                  : ThemeData(
-                      useMaterial3: true,
-                      textTheme:
-                          createTextTheme(context, "Abyssinica SIL", "Aboreto"),
-                      colorScheme: MaterialTheme.lightScheme()));
-                      
-          return MaterialApp(
-            navigatorKey: _navigatorKey,
-            debugShowCheckedModeBanner: false,
-            initialRoute: '/',
-            theme: appTheme,
-            onGenerateRoute: RouterClassSection.generateRoute,
+    return FutureBuilder(
+        future: _loadLangData(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return MultiBlocProvider(
+              // all blocs and cubits must be register here compulsory
+              providers: [
+                BlocProvider<InternetCubit>(
+                  create: (context) => InternetCubit(),
+                ),
+                BlocProvider<LoginBloc>(
+                  create: (context) => LoginBloc(),
+                ),
+                BlocProvider<RegisterBloc>(
+                  create: (context) => RegisterBloc(),
+                ),
+                BlocProvider<DashboardBloc>(
+                  create: (context) => DashboardBloc(),
+                ),
+                BlocProvider<CustomerBloc>(
+                  create: (context) => CustomerBloc(),
+                ),
+                BlocProvider<ThemeSwitcherBloc>(
+                  create: (context) => ThemeSwitcherBloc(),
+                ),
+                BlocProvider<LocaleCubit>(
+                  create: (context) => LocaleCubit(),
+                ),
+              ],
+              child: BlocBuilder<LocaleCubit, LocaleState>(
+                builder: (context, localeState) {
+                  Locale? appLocale = localeState is SelectedLocale
+                      ? localeState.locale
+                      : _locale;
+                  return BlocBuilder<ThemeSwitcherBloc, ThemeSwitcherState>(
+                    builder: (context, themeState) {
+                      ThemeData appTheme = themeState is ThemeDarkModeState
+                          ? ThemeData(
+                              useMaterial3: true,
+                              textTheme: createTextTheme(
+                                  context, "Abyssinica SIL", "Aboreto"),
+                              colorScheme: MaterialTheme.darkScheme())
+                          : (themeState is ThemelightModeState
+                              ? ThemeData(
+                                  useMaterial3: true,
+                                  textTheme: createTextTheme(
+                                      context, "Abyssinica SIL", "Aboreto"),
+                                  colorScheme: MaterialTheme.lightScheme())
+                              : ThemeData(
+                                  useMaterial3: true,
+                                  textTheme: createTextTheme(
+                                      context, "Abyssinica SIL", "Aboreto"),
+                                  colorScheme: MaterialTheme.lightScheme()));
+
+                      return MaterialApp(
+                        navigatorKey: _navigatorKey,
+                        debugShowCheckedModeBanner: false,
+                        initialRoute: '/',
+                        theme: appTheme,
+                        supportedLocales:
+                            AppLocalizationsSetup.supportedLocales,
+                        localizationsDelegates:
+                            AppLocalizationsSetup.localizationsDelegates,
+                        localeResolutionCallback:
+                            AppLocalizationsSetup.localeResolutionCallback,
+                        locale: appLocale,
+                        onGenerateRoute: RouterClassSection.generateRoute,
+                      );
+                    },
+                  );
+                },
+              ),
+            );
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
           );
-        },
-      ),
-    );
+        });
   }
-
-
 }

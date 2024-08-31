@@ -58,6 +58,7 @@ dependencies:
   flutter_local_notifications: ^17.2.2
   google_fonts: ^6.2.1
   animated_toggle_switch: ^0.8.3
+  flutter_localization: ^0.2.2
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:filtercoffee/global/Localization/app_localizations.dart';
 import 'package:filtercoffee/global/blocs/internet/internet_cubit.dart';
 import 'package:filtercoffee/global/blocs/internet/internet_state.dart';
 import 'package:filtercoffee/global/utils/shared_preferences_helper.dart';
@@ -15,7 +16,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-   SessionHelper sp = SessionHelper();
+  SessionHelper sp = SessionHelper();
   @override
   Widget build(BuildContext context) {
     return BlocListener<InternetCubit, InternetState>(
@@ -37,13 +38,14 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> redirectPage(BuildContext context) async {
-   
     if (sp.containsKey("isLoggedIn")!) {
-      Navigator.pushReplacementNamed(context, '/dashboard-screen',
-          arguments: {'title': "Dashboard Screen"});
+      Navigator.pushReplacementNamed(context, '/dashboard-screen', arguments: {
+        'title':
+            AppLocalizations.of(context)!.translate("dashboard")
+      });
     } else {
       Navigator.pushReplacementNamed(context, '/login-screen',
-          arguments: {'title': "Login Screen"});
+          arguments: {'title': AppLocalizations.of(context)!.translate("loginText")});
     }
   }
 }

@@ -1,8 +1,10 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
+import 'package:filtercoffee/global/Localization/app_localizations.dart';
 import 'package:filtercoffee/global/blocs/internet/internet_cubit.dart';
 import 'package:filtercoffee/global/blocs/internet/internet_state.dart';
+import 'package:filtercoffee/global/blocs/locale/locale_cubit.dart';
 import 'package:filtercoffee/global/blocs/theme_switcher/theme_switcher_bloc.dart';
 import 'package:filtercoffee/global/blocs/theme_switcher/theme_switcher_event.dart';
 import 'package:filtercoffee/global/utils/shared_preferences_helper.dart';
@@ -104,7 +106,8 @@ class _DashboardScreenState extends State<DashboardScreen>
           ),
           iconTheme: const IconThemeData(color: Colors.white),
           title: Text(widget.arguments.containsKey("title")
-              ? widget.arguments['title']
+              ? AppLocalizations.of(context)!
+                                  .translate("dashboard")
               : ''),
           centerTitle: true,
           actions: [
@@ -184,6 +187,49 @@ class _DashboardScreenState extends State<DashboardScreen>
                       color: Colors.white,
                     ),
             ),
+         
+          DropdownButton(
+                                  underline: Container(),
+                                  isDense: false,
+                                  dropdownColor: Colors.red,
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  items: [
+                                    const DropdownMenuItem(
+                                      value: Locale('en'),
+                                      child: Text(
+                                        'English',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.normal,
+                                            fontSize: 14),
+                                      ),
+                                    ),
+                                    const DropdownMenuItem(
+                                      value: Locale('hi'),
+                                      child: Text(
+                                        'हिन्दी',
+                                        style: TextStyle(
+                                             color: Colors.white,
+                                            fontWeight: FontWeight.normal,
+                                            fontSize: 14),
+                                      ),
+                                    ),
+                                  ],
+                                  onChanged: (value) {
+                                    if (value!.languageCode == "hi") {
+                                      print("Hindi :- ${value.languageCode}");
+                                      BlocProvider.of<LocaleCubit>(context)
+                                          .toHindi();
+                                     
+                                    } else if (value.languageCode == "en") {
+                                      print("English :- ${value.languageCode}");
+                                      BlocProvider.of<LocaleCubit>(context)
+                                          .toEnglish();
+                                     
+                                    }
+                                  },
+                                  value: AppLocalizations.of(context)!.locale,
+                                )
           ],
           bottom: TabBar(
               indicatorColor: Colors.deepOrange,

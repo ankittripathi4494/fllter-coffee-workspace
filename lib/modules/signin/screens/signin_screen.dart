@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable, use_build_context_synchronously
 
+import 'package:filtercoffee/global/Localization/app_localizations.dart';
 import 'package:filtercoffee/global/widgets/custom_app_bar.dart';
 import 'package:filtercoffee/global/widgets/form_widgets.dart';
 import 'package:flutter/material.dart';
@@ -54,8 +55,10 @@ class SignInScreen extends StatelessWidget {
                                 title: null,
                                 description: state.successMessage);
                             Navigator.pushReplacementNamed(
-                                context, '/dashboard-screen',
-                                arguments: {'title': "Dashboard Screen"});
+                                context, '/dashboard-screen', arguments: {
+                              'title': AppLocalizations.of(context)!
+                                  .translate("dashboard")
+                            });
                           },
                           context: context)
                       : Container(),
