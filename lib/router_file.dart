@@ -3,6 +3,7 @@ import 'package:filtercoffee/modules/customers/screens/customer_list_screen.dart
 import 'package:filtercoffee/modules/customers/screens/edit_customer_screen.dart';
 import 'package:filtercoffee/modules/dashboard/bloc/dashboard_bloc.dart';
 import 'package:filtercoffee/modules/dashboard/screens/dashboard_screen.dart';
+import 'package:filtercoffee/modules/dashboard/widgets/webview_widget.dart';
 import 'package:filtercoffee/modules/error/screens/network_error_screen.dart';
 import 'package:filtercoffee/modules/error/screens/page_error_screen.dart';
 import 'package:filtercoffee/modules/signin/login_bloc/login_bloc.dart';
@@ -152,6 +153,26 @@ class RouterClassSection {
             ),
           ),
         );
+      case '/webview_screen':
+        if (args is Map<String, dynamic>) {
+          return MaterialPageRoute(
+            builder: (context) => BlocProvider(
+              create: (context) => CustomerBloc(),
+              child: WebViewScreenPage(
+                arguments: args,
+              ),
+            ),
+          );
+        }
+        return MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) => CustomerBloc(),
+            child: WebViewScreenPage(
+              arguments: const {},
+            ),
+          ),
+        );
+     
       default:
         return _errorRoute(settings);
     }

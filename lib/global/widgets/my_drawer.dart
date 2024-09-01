@@ -1,5 +1,7 @@
 import 'package:filtercoffee/global/utils/shared_preferences_helper.dart';
 import 'package:filtercoffee/img_list.dart';
+import 'package:filtercoffee/modules/dashboard/widgets/pdf_view_widget.dart';
+import 'package:filtercoffee/modules/dashboard/widgets/webview_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -93,6 +95,54 @@ class MyDrawer {
                   ),
                 ),
               ],
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.pop(context); // close the drawer
+                Navigator.pushNamed(
+                  context,
+                  '/webview_screen',
+                );
+              },
+              leading: const Icon(
+                Icons.web,
+                size: 35,
+                color: Colors.white,
+              ),
+              title: const Text(
+                "WebViewPage",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              trailing: const Icon(
+                Icons.arrow_forward_ios,
+                size: 35,
+                color: Colors.white,
+              ),
+            ),
+             ListTile(
+              onTap: () {
+                Navigator.pop(context); // close the drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder:(context) {
+                    return PdfViewScreenPage(arguments: const {});
+                  },)
+                );
+              },
+              leading: const Icon(
+                Icons.web,
+                size: 35,
+                color: Colors.white,
+              ),
+              title: const Text(
+                "Pdf View Screen",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              trailing: const Icon(
+                Icons.arrow_forward_ios,
+                size: 35,
+                color: Colors.white,
+              ),
             ),
             ListTile(
               onTap: () {

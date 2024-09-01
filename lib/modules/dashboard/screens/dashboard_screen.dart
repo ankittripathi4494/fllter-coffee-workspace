@@ -99,15 +99,20 @@ class _DashboardScreenState extends State<DashboardScreen>
             decoration: BoxDecoration(
                 gradient: LinearGradient(
                     colors: (darkTheme == true)
-                        ? [MaterialTheme.darkScheme().primary, MaterialTheme.darkScheme().primary]
-                        : [MaterialTheme.lightScheme().primary, MaterialTheme.lightScheme().primary],
+                        ? [
+                            MaterialTheme.darkScheme().primary,
+                            MaterialTheme.darkScheme().primary
+                          ]
+                        : [
+                            MaterialTheme.lightScheme().primary,
+                            MaterialTheme.lightScheme().primary
+                          ],
                     begin: Alignment.bottomLeft,
                     end: Alignment.topRight)),
           ),
           iconTheme: const IconThemeData(color: Colors.white),
           title: Text(widget.arguments.containsKey("title")
-              ? AppLocalizations.of(context)!
-                                  .translate("dashboard")
+              ? AppLocalizations.of(context)!.translate("dashboard")
               : ''),
           centerTitle: true,
           actions: [
@@ -187,49 +192,44 @@ class _DashboardScreenState extends State<DashboardScreen>
                       color: Colors.white,
                     ),
             ),
-         
-          DropdownButton(
-                                  underline: Container(),
-                                  isDense: false,
-                                  dropdownColor: Colors.red,
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  items: [
-                                    const DropdownMenuItem(
-                                      value: Locale('en'),
-                                      child: Text(
-                                        'English',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.normal,
-                                            fontSize: 14),
-                                      ),
-                                    ),
-                                    const DropdownMenuItem(
-                                      value: Locale('hi'),
-                                      child: Text(
-                                        'हिन्दी',
-                                        style: TextStyle(
-                                             color: Colors.white,
-                                            fontWeight: FontWeight.normal,
-                                            fontSize: 14),
-                                      ),
-                                    ),
-                                  ],
-                                  onChanged: (value) {
-                                    if (value!.languageCode == "hi") {
-                                      print("Hindi :- ${value.languageCode}");
-                                      BlocProvider.of<LocaleCubit>(context)
-                                          .toHindi();
-                                     
-                                    } else if (value.languageCode == "en") {
-                                      print("English :- ${value.languageCode}");
-                                      BlocProvider.of<LocaleCubit>(context)
-                                          .toEnglish();
-                                     
-                                    }
-                                  },
-                                  value: AppLocalizations.of(context)!.locale,
-                                )
+            DropdownButton(
+              underline: Container(),
+              isDense: false,
+              dropdownColor: Colors.red,
+              borderRadius: BorderRadius.circular(20.0),
+              items: [
+                const DropdownMenuItem(
+                  value: Locale('en'),
+                  child: Text(
+                    'English',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.normal,
+                        fontSize: 14),
+                  ),
+                ),
+                const DropdownMenuItem(
+                  value: Locale('hi'),
+                  child: Text(
+                    'हिन्दी',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.normal,
+                        fontSize: 14),
+                  ),
+                ),
+              ],
+              onChanged: (value) {
+                if (value!.languageCode == "hi") {
+                  print("Hindi :- ${value.languageCode}");
+                  BlocProvider.of<LocaleCubit>(context).toHindi();
+                } else if (value.languageCode == "en") {
+                  print("English :- ${value.languageCode}");
+                  BlocProvider.of<LocaleCubit>(context).toEnglish();
+                }
+              },
+              value: AppLocalizations.of(context)!.locale,
+            )
           ],
           bottom: TabBar(
               indicatorColor: Colors.deepOrange,
@@ -237,10 +237,10 @@ class _DashboardScreenState extends State<DashboardScreen>
               unselectedLabelColor: Colors.white,
               controller: _tabController,
               tabs: const [
-                Icon(
-                  Icons.camera,
-                  size: 50,
-                ),
+                // Icon(
+                //   Icons.web,
+                //   size: 50,
+                // ),
                 Icon(
                   Icons.location_history,
                   size: 50,
@@ -248,7 +248,11 @@ class _DashboardScreenState extends State<DashboardScreen>
                 Icon(
                   Icons.grid_3x3,
                   size: 50,
-                )
+                ),
+                Icon(
+                  Icons.camera,
+                  size: 50,
+                ),
               ]),
         ),
         drawer: MyDrawer.getDrawer(context),
@@ -261,13 +265,14 @@ class _DashboardScreenState extends State<DashboardScreen>
                   children: [
                     Flexible(
                       child: TabBarView(controller: _tabController, children: [
-                        CameraWidget(
-                          state: state,
-                        ),
+                        // const WebviewWidget(),
                         LocationWidget(
                           state: state,
                         ),
                         GridViewWidget(
+                          state: state,
+                        ),
+                        CameraWidget(
                           state: state,
                         ),
                       ]),
