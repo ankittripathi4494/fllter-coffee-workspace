@@ -14,6 +14,7 @@ class PdfViewScreenPage extends StatelessWidget {
   final String pdfUrl =
       "https://www.antennahouse.com/hubfs/xsl-fo-sample/pdf/basic-link-1.pdf";
 
+  
   Future<PDFDocument> fetchPDF() async {
     try {
       // Fetch and return the PDF document

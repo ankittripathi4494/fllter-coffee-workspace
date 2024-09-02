@@ -25,7 +25,8 @@ class WebViewScreenPage extends StatefulWidget {
 class _WebViewScreenPageState extends State<WebViewScreenPage> {
   bool? darkTheme;
   late WebViewController _webViewController;
-  String webUrl = 'http://vardanindia.in';
+  // String webUrl = 'http://vardanindia.in';
+  String webUrl="https://drive.google.com/file/d/1EFXLiBOyGz_171o1SvGKIG3vCtJTsqiO/";
   Map<String, dynamic> contactData = {
     "mailId": "support@financepe.in",
     "contacts": [
@@ -67,7 +68,22 @@ Page resource error:
           ''');
           },
           onNavigationRequest: (NavigationRequest request) {
-            if (request.url.startsWith('https://www.youtube.com/')) {
+            if (request.url.startsWith('https://')) {
+              _openExternalUrl(request.url);
+              return NavigationDecision.prevent;
+            } else if (request.url.startsWith('tel:')) {
+              _openExternalUrl(request.url);
+              return NavigationDecision.prevent;
+            } else if (request.url.startsWith('mail:')) {
+              _openExternalUrl(Uri(
+                scheme: 'mailto',
+                path: request.url.split(":").last,
+                query:
+                    'subject=App Feedback&body=App Version 3.23', //add subject and body here
+              ).toString());
+              return NavigationDecision.prevent;
+            } else if (request.url.startsWith('whatsapp:')) {
+              _openExternalUrl(request.url);
               return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;
@@ -110,6 +126,15 @@ Page resource error:
     }
 
     return darkTheme;
+  }
+
+  _openExternalUrl(String webUrl) async {
+    var url = Uri.parse(webUrl);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   @override
@@ -564,7 +589,6 @@ Page resource error:
                     }));
               },
               icon: Icon(Icons.local_activity))
-        
         ],
       ),
       body: WebViewWidget(
